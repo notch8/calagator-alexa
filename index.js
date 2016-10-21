@@ -1,33 +1,41 @@
 var alexa = require('alexa-app');
 var app = new alexa.app('calagator');
+var TimeParser = require('./lib/TimeParser');
 
 app.dictionary = {
   "days": ["today", "tomorrow"],
-  "daysPossesive": ["today's", "tomorrow's"],
+  "daysPossesive": ["todays", "tomorrows"],
 };
 
 app.intent('WhatsHappening',
   {
     'slots':{
-      'DAY': 'AMAZON.LITERAL'
+      'DAY': 'AMAZON.LITERAL',
+      'POSSESSIVEDAY': 'AMAZON.LITERAL'
     },
     'utterances':[
       "{to list |to tell me |}what is happening {days|DAY}",
       "{to list |to tell me |}what events are {days|DAY}",
       "{to list |to tell me |}what is on the calendar {days|DAY}",
-      "{to list |to tell me |}what is on {daysPossesive|DAY} calendar"
+      "{to list |to tell me |}what is on {daysPossesive|POSESSIVEDAY} calendar"
     ]
   },
   function(request, response){
-    response.say("There are 3 events today" +
-      "I've added a card to the Alexa app listing them");
+    var timeParser = new TimeParser();
+    if(request.slot('DAY')){
+      var targetDate = timeParser.dateForRelativeDay(request.slot('DAY'));
+    }else if(request.slot('POSSESSIVEDAY')){
+      var targetDate = timeParser.dateForRelativeDay(request.slot('POSESSIVEDAY'));
+    }
+
+    response.say("The date:" + targetDate.toString());
 
     response.card({
       type: 'Simple',
       title: 'Tech Events Today',
       content: [
           'There are 3 events today',
-          "Javascript meetup at ..."
+          targetDate.toString()
         ].join("\n")
     })
   }
@@ -42,7 +50,7 @@ app.intent('AMAZON.HelpIntent',
   function(request, response){
     response.say("You can ask me what is happening today or tomorrow." +
       "Or ask about upcoming events.  'Tell me about upcoming networking events', for example." +
-      "I've added a card listing more things I understand.");
+      "I have added a card listing more things I understand.");
 
     var questions = [
       "What is happening today?",

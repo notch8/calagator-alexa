@@ -3,7 +3,7 @@ var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 var expect = require('chai').expect;
 
-var app = require('../app');
+var app = require('../index');
 
 describe("Config", function(){
   it("should list schema", function(){

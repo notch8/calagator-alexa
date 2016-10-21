@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "alexa-app": "^2.3.4"
+    "alexa-app": "^2.3.4",
+    "lodash": "^4.16.4",
+    "timezone": "^1.0.6"
   },
   "devDependencies": {
     "chai": "^3.5.0",
