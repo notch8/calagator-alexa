@@ -26,6 +26,9 @@ app.intent('WhatsHappening',
     ]
   },
   (request, response) => {
+
+    response.session('relativeTargetDay', request.slot('DAY'));
+
     var uri = 'https://calagator.org/events.json';
     var options = {
       method: 'GET',
@@ -35,6 +38,8 @@ app.intent('WhatsHappening',
     };
 
     rp(options).then((calagator) => {
+
+
       var events = calagator.body;
       var targetDate = new TargetDate(request.slot('DAY'));
       var relativeDay = targetDate.relativeDay();
@@ -44,6 +49,8 @@ app.intent('WhatsHappening',
       if(eventCount > 3){
         var numberToListPhrase = "There are " + eventCount + " events " + relativeDay + ".  " +
         "Here are the first 3.";
+        var morePrompt = "Would you like to hear more?";
+        response.shouldEndSession(false, morePrompt);
       } else if(eventCount == 0){
         var numberToListPhrase = "There are no events " + relativeDay + "."
       } else if(eventCount == 1){
@@ -61,6 +68,10 @@ app.intent('WhatsHappening',
         numberToListPhrase,
         eventDescriptions
       ]);
+
+      if(morePrompt){
+        voiceContent.push(morePrompt);
+      };
 
       voiceContent.forEach((snippet) =>{
         response.say(snippet);
