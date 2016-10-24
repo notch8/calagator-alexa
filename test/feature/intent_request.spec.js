@@ -17,7 +17,6 @@ before( (done)=>{
   });
 
   mockery.registerMock('request-promise', ()=>{
-    console.log('running mock');
     var response = {
       body: mockHelper.load(eventsFile)
     };
@@ -87,6 +86,38 @@ describe("Event Requests", ()=>{
 
   describe("WhatsHappening", ()=> {
     var mockRequest = mockHelper.load("whats_happening_request.json");
+
+    describe("bad request", ()=>{
+      var badMockRequest = mockHelper.load("whats_happening_bad_request.json");
+      before( (done) =>{
+        timekeeper.freeze(threeEventTime);
+        done();
+      } );
+
+      after( (done) =>{
+        timekeeper.reset();
+        done();
+      } );
+
+      it("should end session", ()=>{
+        timekeeper.freeze(threeEventTime);
+        return app.request(badMockRequest).then( (response)=>{
+          var subject = response.response;
+          expect(subject).to.have.property("shouldEndSession", true);
+         });
+      });
+
+      describe("response", ()=>{
+        it("should say the correct events", ()=>{
+          const expected = '<speak>I\'m sorry. I didn\'t understand your request.  You can ask me about today or tomorrow.</speak>';
+
+          return app.request(badMockRequest).then( (response)=>{
+            var subject = response.response.outputSpeech
+            expect(subject.ssml).to.equal(expected);
+          });
+        });
+      });
+    });
 
     describe("3 events", ()=>{
       before( (done) =>{

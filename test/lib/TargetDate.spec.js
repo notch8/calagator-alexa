@@ -60,4 +60,12 @@ describe("day words", () => {
     var today = moment().tz("America/Los_Angeles").startOf('day').toString();
     expect(subject.beginningOfDay().toString()).to.equal(today);
   });
+
+  it.only("should not know other things", ()=>{
+    var subject = new TargetDate('bob');
+    expect(subject.isValid()).to.equal(false);
+    expect(subject.relativeDate).to.equal(undefined);
+    expect(subject.beginningOfDay()).to.equal(undefined);
+    expect(subject.endOfDay()).to.equal(undefined);
+  });
 });

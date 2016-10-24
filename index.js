@@ -1,12 +1,18 @@
 //"use strict";
 var alexa = require('alexa-app');
 var app = new alexa.app('calagator');
+var WhatsHappeningResponder = require('./lib/responders/WhatsHappening');
+
 var TargetDate = require('./lib/TargetDate');
 var TimeParser = require('./lib/TimeParser');
 var Event = require('./lib/Event');
 var EventList = require('./lib/EventList');
 var _ = require('lodash');
 var rp = require('request-promise');
+
+var timekeeper = require('timekeeper');
+var sevenEventTime = new Date("2016-10-26T01:48:54+00:00");
+timekeeper.freeze(sevenEventTime);
 
 app.dictionary = {
   "days": ["today", "tomorrow"],
@@ -62,88 +68,26 @@ app.intent('MoreEvents',
 app.intent('WhatsHappening',
   {
     'slots':{
-      'DAY': 'AMAZON.LITERAL'
+      'DAY': 'AMAZON.LITERAL',
+      'EVENT_FILTER': 'AMAZON.LITERAL'
     },
     'utterances':[
       "{to list |to tell me |}what is happening {days|DAY}",
-      "{to list |to tell me |}what events are {days|DAY}",
+      "{to list |to tell me |}what {EVENT_FILTER} events are {days|DAY}",
       "{to list |to tell me |}what is on the calendar {days|DAY}",
       "{to list |to tell me |}what is on {daysPossesive|DAY} calendar"
     ]
   },
   (request, response) => {
 
-    response.session('relativeTargetDay', request.slot('DAY'));
+    var targetDate = new TargetDate(request.slot('DAY'));
 
-    var uri = 'https://calagator.org/events.json';
-    var options = {
-      method: 'GET',
-      uri: uri,
-      json: true,
-      resolveWithFullResponse: true
-    };
-
-    rp(options).then((calagator) => {
-
-
-      var events = calagator.body;
-      var targetDate = new TargetDate(request.slot('DAY'));
-      var relativeDay = targetDate.relativeDay();
-      var eventList = new EventList(events, targetDate);
-      var eventCount = eventList.count();
-
-      if(eventCount > 3){
-        var numberToListPhrase = "There are " + eventCount + " events " + relativeDay + ".  " +
-        "Here are the first 3.";
-        var morePrompt = "Would you like to hear more?";
-        response.shouldEndSession(false, morePrompt);
-      } else if(eventCount == 0){
-        var numberToListPhrase = "There are no events " + relativeDay + "."
-      } else if(eventCount == 1){
-        var numberToListPhrase = "There is " + eventCount + " event " + relativeDay + "." 
-      }else{
-        var numberToListPhrase = "There are " + eventCount + " events " + relativeDay + "." 
-      };
-
-      var eventDescriptions = eventList.events().map( (attrs) => { 
-        var event = new Event(attrs);
-        return event.verbalized() 
-      });
-
-      var voiceContent = _.flatten([
-        numberToListPhrase,
-        eventDescriptions
-      ]);
-
-      if(morePrompt){
-        voiceContent.push(morePrompt);
-      };
-
-      voiceContent.forEach((snippet) =>{
-        response.say(snippet);
-      });
-
-      var cardDescriptions = eventList.events().map( (attrs) => { 
-        var event = new Event(attrs);
-        return event.asCard() 
-      });
- 
-      var cardContent = _.flatten([
-        //eventList.debug(),
-        'There are ' + eventCount + ' events ' + relativeDay + ".\n" + 
-        cardDescriptions.join("\n") //add extra newline inbetween events
-      ]);
-
-      response.card({
-        type: 'Simple',
-        title: 'Tech events ' + relativeDay,
-        content: cardContent.join("\n")
-      });
-
-      response.send();
-    });
- 
-    return false;
+    if(targetDate.isValid()){
+      new WhatsHappeningResponder(request, response);
+      return false;
+    }else{
+      response.say("I'm sorry.  I didn't understand your request.  You can ask me about today or tomorrow.");
+    }
   }
 );
 
