@@ -38,17 +38,67 @@ after( (done) => {
 
 describe("Event Requests", ()=>{
   var timekeeper = require('timekeeper');
+  var threeEventTime = new Date("2016-10-23T01:48:54+00:00");
+  var sevenEventTime = new Date("2016-10-26T01:48:54+00:00");
 
   describe("MoreEvents", ()=>{
-    var sevenEventTime = new Date("2016-10-26T01:48:54+00:00");
+    var mockRequest = mockHelper.load("more_events_request.json");
+
+    before( (done) =>{
+      timekeeper.freeze(sevenEventTime);
+      done();
+    } );
+
+    after( (done) =>{
+      timekeeper.reset();
+      done();
+    } );
+
+    it("should end session", ()=>{
+      timekeeper.freeze(threeEventTime);
+      return app.request(mockRequest).then( (response)=>{
+        var subject = response.response;
+        expect(subject).to.have.property("shouldEndSession", true);
+       });
+    });
+
+    describe("response", ()=>{
+      before( (done) =>{
+        timekeeper.freeze(sevenEventTime);
+        done();
+      } );
+
+      after( (done) =>{
+        timekeeper.reset();
+        done();
+      } );
+
+
+      it("should say the correct events", ()=>{
+        const expected = '<speak>Ok, there are 4 more. At 06:00:00 PM, Donut.js. At 06:00:00 PM, The Tech Academy Social Networking Night. At 06:30:00 PM, Ruby on Rails PDX Monthly Meetup. At 06:30:00 PM, RainSec.</speak>';
+
+        return app.request(mockRequest).then( (response)=>{
+          var subject = response.response.outputSpeech
+          expect(subject.ssml).to.equal(expected);
+        });
+      });
+    });
   });
 
   describe("WhatsHappening", ()=> {
-    var threeEventTime = new Date("2016-10-23T01:48:54+00:00");
-    var sevenEventTime = new Date("2016-10-26T01:48:54+00:00");
     var mockRequest = mockHelper.load("whats_happening_request.json");
 
     describe("3 events", ()=>{
+      before( (done) =>{
+        timekeeper.freeze(threeEventTime);
+        done();
+      } );
+
+      after( (done) =>{
+        timekeeper.reset();
+        done();
+      } );
+
       it("should end session", ()=>{
         timekeeper.freeze(threeEventTime);
         return app.request(mockRequest).then( (response)=>{
@@ -59,7 +109,6 @@ describe("Event Requests", ()=>{
 
       describe("response", ()=>{
         it("should say the correct events", ()=>{
-          timekeeper.freeze(threeEventTime);
           const expected = '<speak>There are 3 events today. At 08:00:00 AM, PDX Women In Tech (PDXWIT) Coderetreat 2016. At 08:00:00 AM, PDX Global Day of Coderetreat 2016. At 10:00:00 AM, DevelopmentNow Little Hackathon of Horrors.</speak>'
 
           return app.request(mockRequest).then( (response)=>{
@@ -79,9 +128,19 @@ describe("Event Requests", ()=>{
       });
     });
 
-    describe("more than events", ()=>{
-      it("should end session", ()=>{
+    describe("more than 3 events", ()=>{
+      before( (done) =>{
         timekeeper.freeze(sevenEventTime);
+        done();
+      } );
+
+      after( (done) =>{
+        timekeeper.reset();
+        done();
+      } );
+
+
+      it("should end session", ()=>{
         return app.request(mockRequest).then( (response)=>{
           var subject = response.response;
           expect(subject).to.have.property("shouldEndSession", false);
@@ -90,7 +149,6 @@ describe("Event Requests", ()=>{
 
       describe("response", ()=>{
         it("should reprompt", ()=>{
-          timekeeper.freeze(sevenEventTime);
           const expected = '<speak>Would you like to hear more?</speak>';
           return app.request(mockRequest).then( (response)=>{
             var subject = response.response.reprompt.outputSpeech
@@ -99,7 +157,6 @@ describe("Event Requests", ()=>{
         });
 
         it("should set targetDate in session", ()=>{
-          timekeeper.freeze(sevenEventTime);
           return app.request(mockRequest).then( (response)=>{
             var subject = response.sessionAttributes
             expect(subject.relativeTargetDay).to.equal('today');
