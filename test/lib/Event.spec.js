@@ -7,7 +7,7 @@ describe("Event", function(){
   var subject = new Event(attrs);
 
   it("should have verbal description", function(){
-    expect(subject.verbalized()).to.equal("08:00:00 AM.  PDX Women In Tech (PDXWIT) Coderetreat 2016");
+    expect(subject.verbalized()).to.equal("At 08:00:00 AM, PDX Women In Tech (PDXWIT) Coderetreat 2016.")
   });
 
   it("should have card description", function(){

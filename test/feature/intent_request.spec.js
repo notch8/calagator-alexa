@@ -52,7 +52,7 @@ describe("WhatsHappening", ()=> {
 
   describe("response", ()=>{
     it("should say the correct events", ()=>{
-      const expected = '<speak>There are 3 events today. At 08:00:00 AM, PDX Women In Tech (PDXWIT) Coderetreat 2016 At 08:00:00 AM, PDX Global Day of Coderetreat 2016 At 10:00:00 AM, DevelopmentNow Little Hackathon of Horrors</speak>' 
+      const expected = '<speak>There are 3 events today. At 08:00:00 AM, PDX Women In Tech (PDXWIT) Coderetreat 2016. At 08:00:00 AM, PDX Global Day of Coderetreat 2016. At 10:00:00 AM, DevelopmentNow Little Hackathon of Horrors.</speak>'
 
       return app.request(mockRequest).then( (response)=>{
         var subject = response.response.outputSpeech

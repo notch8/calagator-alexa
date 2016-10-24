@@ -1,16 +1,16 @@
 var expect = require('chai').expect;
-var moment = require('moment');
+var moment = require('moment-timezone');
 var TargetDate = require('../../lib/TargetDate');
 
 describe("TargetDate", () => {
   var subject = new TargetDate('today');
 
   it("should know beginning of day", () => {
-    expect(subject.beginningOfDay().toString()).to.equal(moment().startOf('day').toString());
+    expect(subject.beginningOfDay().toString()).to.equal(moment().tz("America/Los_Angeles").startOf('day').toString());
   });
 
   it("should know end of day", () => {
-    expect(subject.endOfDay().toString()).to.equal(moment().endOf('day').toString());
+    expect(subject.endOfDay().toString()).to.equal(moment().tz("America/Los_Angeles").endOf('day').toString());
   });
 });
 
@@ -39,25 +39,25 @@ describe('relative day', () => {
 describe("day words", () => {
   it("should know tomorrow", () => {
     var subject = new TargetDate('tomorrow');
-    var tomorrow = moment().add(1, 'day').startOf('day').toString();
+    var tomorrow = moment().tz("America/Los_Angeles").add(1, 'day').startOf('day').toString();
     expect(subject.beginningOfDay().toString()).to.equal(tomorrow);
   });
 
   it("should know today", () => {
     var subject = new TargetDate('today');
-    var today = moment().startOf('day').toString();
+    var today = moment().tz("America/Los_Angeles").startOf('day').toString();
     expect(subject.beginningOfDay().toString()).to.equal(today);
   });
 
   it("should know tomorrows (possessive)", () => {
     var subject = new TargetDate('tomorrows');
-    var tomorrow = moment().add(1, 'day').startOf('day').toString();
+    var tomorrow = moment().tz("America/Los_Angeles").add(1, 'day').startOf('day').toString();
     expect(subject.beginningOfDay().toString()).to.equal(tomorrow);
   });
 
   it("should know todays (possessive)", () => {
     var subject = new TargetDate('todays');
-    var today = moment().startOf('day').toString();
+    var today = moment().tz("America/Los_Angeles").startOf('day').toString();
     expect(subject.beginningOfDay().toString()).to.equal(today);
   });
 });
