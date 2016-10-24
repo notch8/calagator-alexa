@@ -21,7 +21,8 @@
       "name": "MoreEvents",
       "slots": {
         "DESIRE": {
-          "name": "DESIRE"
+          "name": "DESIRE",
+          "value": "no"
         }
       }
     }

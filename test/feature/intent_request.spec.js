@@ -84,6 +84,52 @@ describe("Event Requests", ()=>{
     });
   });
 
+
+  describe("No MoreEvents", ()=>{
+    var mockRequest = mockHelper.load("more_events_request_no.json");
+
+    before( (done) =>{
+      timekeeper.freeze(sevenEventTime);
+      done();
+    } );
+
+    after( (done) =>{
+      timekeeper.reset();
+      done();
+    } );
+
+    it("should end session", ()=>{
+      timekeeper.freeze(threeEventTime);
+      return app.request(mockRequest).then( (response)=>{
+        var subject = response.response;
+        expect(subject).to.have.property("shouldEndSession", true);
+       });
+    });
+
+    describe.only("response", ()=>{
+      before( (done) =>{
+        timekeeper.freeze(sevenEventTime);
+        done();
+      } );
+
+      after( (done) =>{
+        timekeeper.reset();
+        done();
+      } );
+
+
+      it("should say the correct events", ()=>{
+        const expected = '<speak>Ok. Goodbye.</speak>'
+
+        return app.request(mockRequest).then( (response)=>{
+          var subject = response.response.outputSpeech
+          expect(subject.ssml).to.equal(expected);
+        });
+      });
+    });
+  });
+
+
   describe("WhatsHappening", ()=> {
     var mockRequest = mockHelper.load("whats_happening_request.json");
 
@@ -109,7 +155,7 @@ describe("Event Requests", ()=>{
 
       describe("response", ()=>{
         it("should say the correct events", ()=>{
-          const expected = '<speak>I\'m sorry. I didn\'t understand your request.  You can ask me about today or tomorrow.</speak>';
+          const expected = '<speak>I\'m sorry. I didn\'t understand your request.  You can ask, \'Alexa, ask Calagator what is happing today or tomorrow\'.</speak>'
 
           return app.request(badMockRequest).then( (response)=>{
             var subject = response.response.outputSpeech

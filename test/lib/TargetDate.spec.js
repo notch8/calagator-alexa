@@ -61,7 +61,7 @@ describe("day words", () => {
     expect(subject.beginningOfDay().toString()).to.equal(today);
   });
 
-  it.only("should not know other things", ()=>{
+  it("should not know other things", ()=>{
     var subject = new TargetDate('bob');
     expect(subject.isValid()).to.equal(false);
     expect(subject.relativeDate).to.equal(undefined);

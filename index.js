@@ -2,13 +2,15 @@
 var alexa = require('alexa-app');
 var app = new alexa.app('calagator');
 var WhatsHappeningResponder = require('./lib/responders/WhatsHappening');
+var BadRequestResponder = require('./lib/responders/BadRequest');
+var MoreEventsResponder = require('./lib/responders/MoreEvents');
 
 var TargetDate = require('./lib/TargetDate');
-var TimeParser = require('./lib/TimeParser');
-var Event = require('./lib/Event');
-var EventList = require('./lib/EventList');
-var _ = require('lodash');
-var rp = require('request-promise');
+//var TimeParser = require('./lib/TimeParser');
+//var Event = require('./lib/Event');
+//var EventList = require('./lib/EventList');
+//var _ = require('lodash');
+//var rp = require('request-promise');
 
 var timekeeper = require('timekeeper');
 var sevenEventTime = new Date("2016-10-26T01:48:54+00:00");
@@ -21,59 +23,38 @@ app.dictionary = {
 
 app.intent('MoreEvents',
   {
+    'slots':{
+      'DESIRE': 'AMAZON.LITERAL' 
+    },
     'utterances':[
-      "yes",
-      "{yes|}tell me more",
-      "{yes|}list them"
+      "{yes|no|DESIRE}",
+      "{yes|DESIRE} tell me more",
+      "{yes|DESIRE} list them",
+      "tell me more",
+      "list them",
     ]
   },
   (request, response) => {
-    var uri = 'https://calagator.org/events.json';
-    var options = {
-      method: 'GET',
-      uri: uri,
-      json: true,
-      resolveWithFullResponse: true
-    };
+    if(request.session("relativeTargetDay") && (!request.slot('DESIRE') || request.slot('DESIRE') == 'yes' )){
+      new MoreEventsResponder(request, response);
+      return false;
+    }else if(request.slot('DESIRE') == 'no'){
+      response.say('Ok.  Goodbye.');
+    }else{
+      new BadRequestResponder(request, response);
+    }
 
-    rp(options).then((calagator) => {
-
-
-      var events = calagator.body;
-      var targetDate = new TargetDate(request.session("relativeTargetDay"));
-      var relativeDay = targetDate.relativeDay();
-      var eventList = new EventList(events, targetDate, true);
-      var eventCount = eventList.count() - 3;
-
-      var eventDescriptions = eventList.events().map( (attrs) => { 
-        var event = new Event(attrs);
-        return event.verbalized() 
-      });
-
-      var voiceContent = _.flatten([
-        "Ok, there are " + eventCount + " more.",
-        eventDescriptions
-      ]);
-
-      voiceContent.forEach((snippet) =>{
-        response.say(snippet);
-      });
-      response.send();
-    });
- 
-    return false;
   }
 );
 
 app.intent('WhatsHappening',
   {
     'slots':{
-      'DAY': 'AMAZON.LITERAL',
-      'EVENT_FILTER': 'AMAZON.LITERAL'
+      'DAY': 'AMAZON.LITERAL'
     },
     'utterances':[
       "{to list |to tell me |}what is happening {days|DAY}",
-      "{to list |to tell me |}what {EVENT_FILTER} events are {days|DAY}",
+      "{to list |to tell me |}what events are {days|DAY}",
       "{to list |to tell me |}what is on the calendar {days|DAY}",
       "{to list |to tell me |}what is on {daysPossesive|DAY} calendar"
     ]
@@ -86,7 +67,7 @@ app.intent('WhatsHappening',
       new WhatsHappeningResponder(request, response);
       return false;
     }else{
-      response.say("I'm sorry.  I didn't understand your request.  You can ask me about today or tomorrow.");
+      new BadRequestResponder(request, response);
     }
   }
 );
