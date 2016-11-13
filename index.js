@@ -103,12 +103,15 @@ app.intent('AMAZON.HelpIntent',
 
     var questions = [
       "What is happening today?",
-      "What is happening tomorrow?"
+      "What is happening tomorrow?",
+      "about events on Monday",
+      "about upcoming networking events"
+      
     ];
     response.card({
       type: 'Simple',
       title: 'Calagator Help',
-      content: "Here are some questions you can ask me:\n" + questions.join("\n")
+      content: "I know about Tech events in Portland Oregon.  Just as: \"Alexa, ask Calagator:\n" + questions.join("\n")
     });
   }
 );
