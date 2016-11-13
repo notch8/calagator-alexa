@@ -4,17 +4,13 @@ var app = new alexa.app('calagator');
 var WhatsHappeningResponder = require('./lib/responders/WhatsHappening');
 var BadRequestResponder = require('./lib/responders/BadRequest');
 var MoreEventsResponder = require('./lib/responders/MoreEvents');
+var TopicResponder = require('./lib/responders/Topic');
 
 var TargetDate = require('./lib/TargetDate');
-//var TimeParser = require('./lib/TimeParser');
-//var Event = require('./lib/Event');
-//var EventList = require('./lib/EventList');
-//var _ = require('lodash');
-//var rp = require('request-promise');
 
-var timekeeper = require('timekeeper');
-var sevenEventTime = new Date("2016-10-26T01:48:54+00:00");
-timekeeper.freeze(sevenEventTime);
+//var timekeeper = require('timekeeper');
+//var sevenEventTime = new Date("2016-10-26T01:48:54+00:00");
+//timekeeper.freeze(sevenEventTime);
 
 app.dictionary = {
   "days": ["today", "tomorrow"],
@@ -24,12 +20,12 @@ app.dictionary = {
 app.intent('MoreEvents',
   {
     'slots':{
-      'DESIRE': 'AMAZON.LITERAL' 
+      'DESIRE': 'DesireSlot' 
     },
     'utterances':[
-      "{yes|no|DESIRE}",
-      "{yes|DESIRE} tell me more",
-      "{yes|DESIRE} list them",
+      "{-|DESIRE}",
+      "{-|DESIRE} tell me more",
+      "{-|DESIRE} list them",
       "tell me more",
       "list them",
     ]
@@ -50,13 +46,15 @@ app.intent('MoreEvents',
 app.intent('WhatsHappening',
   {
     'slots':{
-      'DAY': 'AMAZON.LITERAL'
+      'DAY': 'DaySlot'
     },
     'utterances':[
-      "{to list |to tell me |}what is happening {days|DAY}",
-      "{to list |to tell me |}what events are {days|DAY}",
-      "{to list |to tell me |}what is on the calendar {days|DAY}",
-      "{to list |to tell me |}what is on {daysPossesive|DAY} calendar"
+      "for {events|meetups|meetings} {on|} {-|DAY}",
+      "to give me {all|all the|the|} {events|meetups|meetings} {on|} {-|DAY}",
+      "{to list |to tell me |}what is happening {on|} {-|DAY}",
+      "{to list |to tell me |}what events are {on|} {-|DAY}",
+      "{to list |to tell me |}what is on the calendar {-|DAY}",
+      "{to list |to tell me |}what is on {-|DAY} {calendar|}"
     ]
   },
   (request, response) => {
@@ -72,10 +70,29 @@ app.intent('WhatsHappening',
   }
 );
 
+app.intent('TopicEvents',
+  {
+    'slots':{
+      'TOPIC': 'TopicSlot'
+    },
+    'utterances':[
+      'to {tell me about|list} {|upcoming} {-|TOPIC} {events|meetups|meetings}',
+      'to give me {|upcoming} {-|TOPIC} {events|meetups|meetings}',
+      'about {|upcoming} {-|TOPIC} {events|meetups|meetings}',
+      'to {tell me about|list|give me} {|upcoming} {events|meetups|meetings} about {-|TOPIC}',
+    ]
+  },
+  (request, response) => {
+    new TopicResponder(request, response);
+    return false;
+  }
+);
+
+
 app.intent('AMAZON.HelpIntent', 
   {
     'utterances':[
-      "for help {customizing|setting up|getting started}"
+      "for help {|customizing|setting up|getting started}"
     ]
   },
   (request, response) => {

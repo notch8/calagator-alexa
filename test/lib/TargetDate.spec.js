@@ -14,6 +14,70 @@ describe("TargetDate", () => {
   });
 });
 
+describe('weekdays', ()=>{
+  let timekeeper = require('timekeeper');
+  let frozenTime = new Date("2016-10-23T01:48:54+00:00");
+
+  before( (done) =>{
+    timekeeper.freeze(frozenTime);
+    done();
+  } );
+
+  after( (done) =>{
+    timekeeper.reset();
+    done();
+  } );
+
+  it("should know today (Sunday)", ()=>{
+    var subject = new TargetDate('Sunday');
+    let expectedDay = moment().day("Sunday").tz('America/Los_Angeles');
+    var expected = expectedDay.startOf('day').toString();
+    expect(subject.beginningOfDay().toString()).to.equal(expected);
+  });
+
+  it("should know Monday", ()=>{
+    var subject = new TargetDate('Monday');
+    let expectedDay = moment().day("Monday").day(7).tz('America/Los_Angeles');
+    var expected = expectedDay.startOf('day').toString();
+    expect(subject.beginningOfDay().toString()).to.equal(expected);
+  });
+
+  it("should know Tuesday", ()=>{
+    var subject = new TargetDate('Tuesday');
+    let expectedDay = moment().day("Tuesday").day(7).tz('America/Los_Angeles');
+    var expected = expectedDay.startOf('day').toString();
+    expect(subject.beginningOfDay().toString()).to.equal(expected);
+  });
+
+  it("should know Wednesday", ()=>{
+    var subject = new TargetDate('Wednesday');
+    let expectedDay = moment().day("Wednesday").day(7).tz('America/Los_Angeles');
+    var expected = expectedDay.startOf('day').toString();
+    expect(subject.beginningOfDay().toString()).to.equal(expected);
+  });
+
+  it("should know Thursday", ()=>{
+    var subject = new TargetDate('Thursday');
+    let expectedDay = moment().day("Thursday").day(7).tz('America/Los_Angeles');
+    var expected = expectedDay.startOf('day').toString();
+    expect(subject.beginningOfDay().toString()).to.equal(expected);
+  });
+
+  it("should know Friday", ()=>{
+    var subject = new TargetDate('Friday');
+    let expectedDay = moment().day("Friday").day(7).tz('America/Los_Angeles');
+    var expected = expectedDay.startOf('day').toString();
+    expect(subject.beginningOfDay().toString()).to.equal(expected);
+  });
+
+  it("should know Saturday", ()=>{
+    var subject = new TargetDate('Saturday');
+    let expectedDay = moment().day("Saturday").day(7).tz('America/Los_Angeles');
+    var expected = expectedDay.startOf('day').toString();
+    expect(subject.beginningOfDay().toString()).to.equal(expected);
+  });
+});
+
 describe('relative day', () => {
   it("should know today", ()=> {
     var subject = new TargetDate('today');
