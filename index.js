@@ -58,7 +58,7 @@ app.intent('WhatsHappening',
     ]
   },
   (request, response) => {
-
+    response.session('relativeTargetDay', request.slot('DAY').toLowerCase());
     var targetDate = new TargetDate(request.slot('DAY'));
 
     if(targetDate.isValid()){
