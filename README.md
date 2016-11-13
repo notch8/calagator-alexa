@@ -6,10 +6,10 @@ This is an Alexa Skill built of the excellent [alexa-app](https://github.com/mat
 ##Contributions and issues are gladly accepted.
 
 ### To run project in development
-  clone
-  $ cd ./calagator-alexa
-  $ npm-install
-  $ npm test
+  - clone
+  - $ cd ./calagator-alexa
+  - $ npm-install
+  - $ npm test
   
 ### TODO
   - Add "list 3 more" command to MoreEvents
