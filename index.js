@@ -49,7 +49,7 @@ app.intent('WhatsHappening',
       'DAY': 'DaySlot'
     },
     'utterances':[
-      "for {events|meetups|meetings} {on|} {-|DAY}",
+      "{for|about} {events|meetups|meetings} {on|} {-|DAY}",
       "to give me {all|all the|the|} {events|meetups|meetings} {on|} {-|DAY}",
       "{to list |to tell me |}what is happening {on|} {-|DAY}",
       "{to list |to tell me |}what events are {on|} {-|DAY}",
