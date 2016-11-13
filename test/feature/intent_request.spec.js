@@ -175,7 +175,7 @@ describe("Event Requests", ()=>{
         done();
       } );
 
-      let mockRequest = mockHelper.load("whats_happening_monday_request.json");
+      let mockRequest = mockHelper.load("whats_happening_sunday_request.json");
 
       it("should end session", ()=>{
         return app.request(mockRequest).then( (response)=>{
@@ -185,9 +185,8 @@ describe("Event Requests", ()=>{
       });
 
       it("should reprompt", ()=>{
-        const expected = '<speak>There are no events Monday.</speak>';
+        const expected = '<speak>There are no events Sunday.</speak>';
         return app.request(mockRequest).then( (response)=>{
-          console.log(response)
           let subject = response.response.outputSpeech
           expect(subject.ssml).to.equal(expected);
         });
@@ -236,14 +235,16 @@ describe("Event Requests", ()=>{
 
         describe("response", ()=>{
           it("should say the correct events", ()=>{
-            const expected = `<speak>I found 7 upcoming events. At 08:00:00 AM Saturday, PDX Women In Tech (PDXWIT) Coderetreat 2016. At 04:30:00 PM Tuesday, PDX Women in Tech (PDXWIT) Happy Hour Networking Event. At 05:30:00 PM Tuesday, PDX Women In Tech (PDXWIT) presents - "Most Likely to Succeed" Viewing. At 06:00:00 PM Friday, We Code Hackathon for Women & Friends. At 05:30:00 PM Thursday, PDX Women In Tech (PDXWIT) presents Demystifying Telecom:How the voice you hear got there. At 05:00:00 PM Tuesday, PDX Women in Tech (PDXWIT) Mentorship Program Networking Event. At 03:30:00 PM Friday, PDX Women In Tech (PDXWIT) Volunteering with Free Geek. I added them to a card in the Alexa app.</speak>`
+            const expected = `<speak>I found 2 upcoming events. At 08:00:00 AM Saturday, PDX Women In Tech (PDXWIT) Coderetreat 2016. At 04:30:00 PM Tuesday, PDX Women in Tech (PDXWIT) Happy Hour Networking Event. I added them to a card in the Alexa app.</speak>`
+
             return app.request(mockRequest).then( (response)=>{
               let subject = response.response.outputSpeech
               expect(subject.ssml).to.equal(expected);
             });
           });
+
           it("should add a card", ()=>{
-            const expected = `Upcoming events related to women\nPDX Women In Tech (PDXWIT) Coderetreat 2016\nStarts At: 8:00 AM\n310 SW 4th Ave Suite 412 Portland, OR 97204\nPDX Women in Tech (PDXWIT) Happy Hour Networking Event\nStarts At: 4:30 PM\nPDX Women In Tech (PDXWIT) presents - "Most Likely to Succeed" Viewing\nStarts At: 5:30 PM\n135 SW Taylor Suite 200, Portland, Oregon, 97204\nWe Code Hackathon for Women & Friends\nStarts At: 6:00 PM\n308 SW 2nd Ave Fifth Floor Portland, OR 97204\nPDX Women In Tech (PDXWIT) presents Demystifying Telecom:How the voice you hear got there\nStarts At: 5:30 PM\nPDX Women in Tech (PDXWIT) Mentorship Program Networking Event\nStarts At: 5:00 PM\n108 NW 9th Ave. Ste. 201 Portland, OR 97209\nPDX Women In Tech (PDXWIT) Volunteering with Free Geek\nStarts At: 3:30 PM\n1731 SE 10th Avenue, Portland, OR 97214`
+            const expected = 'Upcoming events related to women\n--------------------------\nSaturday 8:00 AM\nPDX Women In Tech (PDXWIT) Coderetreat 2016\n310 SW 4th Ave Suite 412 Portland, OR 97204\n--------------------------\nTuesday 4:30 PM\nPDX Women in Tech (PDXWIT) Happy Hour Networking Event'
 
             return app.request(mockRequest).then( (response)=>{
               let subject = response.response.card
@@ -285,7 +286,7 @@ describe("Event Requests", ()=>{
         });
 
         it("should add a card", ()=>{
-          const expected = 'There are 3 events today.\nPDX Women In Tech (PDXWIT) Coderetreat 2016\nStarts At: 8:00 AM\n310 SW 4th Ave Suite 412 Portland, OR 97204\nPDX Global Day of Coderetreat 2016\nStarts At: 8:00 AM\n249 NW Park Ave Portland, OR 97209\nDevelopmentNow Little Hackathon of Horrors\nStarts At: 10:00 AM\n9 SE 3rd Ave Ste 220, Portland, OR 97214'
+          const expected = 'There are 3 events today.\n--------------------------\nSaturday 8:00 AM\nPDX Women In Tech (PDXWIT) Coderetreat 2016\n310 SW 4th Ave Suite 412 Portland, OR 97204\n--------------------------\nSaturday 8:00 AM\nPDX Global Day of Coderetreat 2016\n249 NW Park Ave Portland, OR 97209\n--------------------------\nSaturday 10:00 AM\nDevelopmentNow Little Hackathon of Horrors\n9 SE 3rd Ave Ste 220, Portland, OR 97214'
 
           return app.request(mockRequest).then( (response)=>{
             let subject = response.response.card
@@ -307,7 +308,7 @@ describe("Event Requests", ()=>{
       } );
 
       describe('asking about Wednesday', ()=>{
-        let mockRequest = mockHelper.load("whats_happening_wednesday_request.json");
+        let mockRequest = mockHelper.load("whats_happening_thursday_request.json");
 
         it("should end session", ()=>{
           return app.request(mockRequest).then( (response)=>{
@@ -329,7 +330,7 @@ describe("Event Requests", ()=>{
           it("should set targetDate in session", ()=>{
             return app.request(mockRequest).then( (response)=>{
               let subject = response.sessionAttributes
-              expect(subject.relativeTargetDay).to.equal('wednesday');
+              expect(subject.relativeTargetDay).to.equal('thursday');
             });
           });
         });

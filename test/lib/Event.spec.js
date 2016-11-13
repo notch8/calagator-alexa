@@ -11,6 +11,7 @@ describe("Event", function(){
   });
 
   it("should have card description", function(){
-    expect(subject.asCard()).to.equal("PDX Women In Tech (PDXWIT) Coderetreat 2016\nStarts At: 8:00 AM\n310 SW 4th Ave Suite 412 Portland, OR 97204");
+    const expected = '--------------------------\nSaturday  8:00 AM\nPDX Women In Tech (PDXWIT) Coderetreat 2016\n310 SW 4th Ave Suite 412 Portland, OR 97204';
+    expect(subject.asCard()).to.equal(expected);
   })
 });
