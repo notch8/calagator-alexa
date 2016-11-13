@@ -98,7 +98,7 @@ app.intent('AMAZON.HelpIntent',
   (request, response) => {
     response.say("To use the Calagator skill, you can ask me what is happening today or tomorrow.");
     response.say("Or ask about upcoming events.");
-    response.say("For example, Tell me about upcoming networking events.");
+    response.say("For example, Ask Calagator about upcoming networking events.");
     response.say("I have added a card to the Alexa app listing more things I understand.");
 
     var questions = [
