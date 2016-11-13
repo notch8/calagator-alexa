@@ -83,6 +83,7 @@ app.intent('TopicEvents',
     ]
   },
   (request, response) => {
+    response.session('relativeTargetDay', request.slot('TOPIC').toLowerCase());
     new TopicResponder(request, response);
     return false;
   }
